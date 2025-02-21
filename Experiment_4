@@ -1,0 +1,249 @@
+Easy Level:
+Write a Java program to implement an ArrayList that stores employee details (ID, Name, and Salary). Allow users to add, update, remove, and search employees.
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Employee {
+    int id;
+    String name;
+    double salary;
+
+    Employee(int id, String name, double salary) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", Salary: " + salary;
+    }
+}
+
+public class EmployeeManagement {
+    static ArrayList<Employee> employees = new ArrayList<>();
+    static Scanner scanner = new Scanner(System.in);
+
+    public static void addEmployee() {
+        System.out.print("Enter ID: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("Enter Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter Salary: ");
+        double salary = scanner.nextDouble();
+        employees.add(new Employee(id, name, salary));
+        System.out.println("Employee added successfully.");
+    }
+
+    public static void updateEmployee() {
+        System.out.print("Enter Employee ID to update: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        for (Employee emp : employees) {
+            if (emp.id == id) {
+                System.out.print("Enter New Name: ");
+                emp.name = scanner.nextLine();
+                System.out.print("Enter New Salary: ");
+                emp.salary = scanner.nextDouble();
+                System.out.println("Employee updated successfully.");
+                return;
+            }
+        }
+        System.out.println("Employee not found.");
+    }
+
+    public static void removeEmployee() {
+        System.out.print("Enter Employee ID to remove: ");
+        int id = scanner.nextInt();
+        for (int i = 0; i < employees.size(); i++) {
+            if (employees.get(i).id == id) {
+                employees.remove(i);
+                System.out.println("Employee removed successfully.");
+                return;
+            }
+        }
+        System.out.println("Employee not found.");
+    }
+
+    public static void searchEmployee() {
+        System.out.print("Enter Employee ID to search: ");
+        int id = scanner.nextInt();
+        for (Employee emp : employees) {
+            if (emp.id == id) {
+                System.out.println(emp);
+                return;
+            }
+        }
+        System.out.println("Employee not found.");
+    }
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\nEmployee Management System");
+            System.out.println("1. Add Employee");
+            System.out.println("2. Update Employee");
+            System.out.println("3. Remove Employee");
+            System.out.println("4. Search Employee");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1 -> addEmployee();
+                case 2 -> updateEmployee();
+                case 3 -> removeEmployee();
+                case 4 -> searchEmployee();
+                case 5 -> {
+                    System.out.println("Exiting...");
+                    return;
+                }
+                default -> System.out.println("Invalid choice, try again.");
+            }
+        }
+    }
+}
+
+
+Medium Level:
+Create a program to collect and store all the cards to assist the users in finding all the cards in a given symbol using Collection interface.
+
+import java.util.*;
+
+class Card {
+    private String symbol;
+    private String value;
+
+    public Card(String symbol, String value) {
+        this.symbol = symbol;
+        this.value = value;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    @Override
+    public String toString() {
+        return "Card{Symbol='" + symbol + "', Value='" + value + "'}";
+    }
+}
+
+public class CardCollection {
+    private static Collection<Card> cards = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void addCard() {
+        System.out.print("Enter Card Symbol: ");
+        String symbol = scanner.next();
+        System.out.print("Enter Card Value: ");
+        String value = scanner.next();
+        cards.add(new Card(symbol, value));
+        System.out.println("Card added successfully.");
+    }
+
+    public static void findCardsBySymbol() {
+        System.out.print("Enter Symbol to search for: ");
+        String symbol = scanner.next();
+        boolean found = false;
+        for (Card card : cards) {
+            if (card.getSymbol().equalsIgnoreCase(symbol)) {
+                System.out.println(card);
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No cards found for the given symbol.");
+        }
+    }
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\nCard Collection System");
+            System.out.println("1. Add Card");
+            System.out.println("2. Find Cards by Symbol");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1 -> addCard();
+                case 2 -> findCardsBySymbol();
+                case 3 -> {
+                    System.out.println("Exiting...");
+                    return;
+                }
+                default -> System.out.println("Invalid choice, try again.");
+            }
+        }
+    }
+}
+
+
+Hard Level:
+Develop a ticket booking system with synchronized threads to ensure no double booking of seats. Use thread priorities to simulate VIP bookings being processed first.
+
+import java.util.*;
+
+class TicketBookingSystem {
+    private static final int TOTAL_SEATS = 10;
+    private final boolean[] seats = new boolean[TOTAL_SEATS];
+
+    public synchronized boolean bookSeat(int seatNumber, String customerName) {
+        if (seatNumber < 0 || seatNumber >= TOTAL_SEATS) {
+            System.out.println(customerName + " - Invalid seat number.");
+            return false;
+        }
+        if (!seats[seatNumber]) {
+            seats[seatNumber] = true;
+            System.out.println(customerName + " successfully booked seat " + seatNumber);
+            return true;
+        } else {
+            System.out.println(customerName + " - Seat " + seatNumber + " is already booked.");
+            return false;
+        }
+    }
+}
+
+class Customer extends Thread {
+    private final TicketBookingSystem system;
+    private final int seatNumber;
+    private final String customerName;
+
+    public Customer(TicketBookingSystem system, int seatNumber, String customerName, int priority) {
+        this.system = system;
+        this.seatNumber = seatNumber;
+        this.customerName = customerName;
+        setPriority(priority);
+    }
+
+    @Override
+    public void run() {
+        system.bookSeat(seatNumber, customerName);
+    }
+}
+
+public class TicketBookingApp {
+    public static void main(String[] args) {
+        TicketBookingSystem system = new TicketBookingSystem();
+        List<Customer> customers = new ArrayList<>();
+
+        customers.add(new Customer(system, 2, "VIP Customer 1", Thread.MAX_PRIORITY));
+        customers.add(new Customer(system, 2, "Regular Customer 1", Thread.MIN_PRIORITY));
+        customers.add(new Customer(system, 5, "VIP Customer 2", Thread.MAX_PRIORITY));
+        customers.add(new Customer(system, 5, "Regular Customer 2", Thread.MIN_PRIORITY));
+        customers.add(new Customer(system, 7, "Regular Customer 3", Thread.NORM_PRIORITY));
+        customers.add(new Customer(system, 7, "VIP Customer 3", Thread.MAX_PRIORITY));
+
+        for (Customer customer : customers) {
+            customer.start();
+        }
+
+        for (Customer customer : customers) {
+            try {
+                customer.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
